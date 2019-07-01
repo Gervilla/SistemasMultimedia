@@ -16,12 +16,23 @@ public class Linea extends FiguraPro{
      * @param p1: punto inicial.
      * @param p2: punto final.
      * @param ct: color de trazo.
+     * @param tz: grosor del trazo.
+     * @param r: opcion de renderizado.
+     * @param tp: con transparencia
+     * @param con: continuidad de trazo.
+     * @param nt: nivel de transparencia.
      */
-    public Linea(Point p1, Point p2, Color ct){
+    public Linea(Point p1, Point p2, Color ct, float tz, boolean r, boolean tp, boolean con, float nt){
         super();
-        tipo = Tipo.LINEA;
-        colorTrazo = ct;
-        miShape = new Line2D.Float(p1, p2);
+        this.tipo = Tipo.LINEA;
+        this.colorTrazo = ct;
+        this.grosor = tz;
+        this.renderizar = r;
+        this.transparencia = tp;
+        this.continuo = con;
+        this.nivelTransp = nt;
+        
+        this.miShape = new Line2D.Float(p1, p2);
     }
     /**
      * Establece la linea entre dos puntos.
@@ -39,11 +50,26 @@ public class Linea extends FiguraPro{
     public void setColorRelleno(Color color) {
     }
     /**
+     * Establece el color de relleno secundario (no hace nada ya que las lineas no tienen relleno).
+     * @param color: nuevo color.
+     */
+    @Override
+    public void setColorRelleno2(Color color) {
+    }
+    /**
      * Devuelve el color del relleno(no hace nada ya que las lineas no tienen relleno).
      * @return el color del trazo al no tener relleno.
      */
     @Override
     public Color getColorRelleno() {
+        return this.getColorTrazo();
+    }
+    /**
+     * Devuelve el color del relleno secundario.
+     * @return el color del relleno secundario.
+     */
+    @Override
+    public Color getColorRelleno2(){
         return this.getColorTrazo();
     }
     /**
@@ -60,6 +86,20 @@ public class Linea extends FiguraPro{
     @Override
     public boolean getRelleno() {
         return false;
+    }
+    /**
+     * Establece si tiene o no degradado (no hace nada ya que las lineas no tienen relleno).
+     * @param rld: si tiene degradado o no.
+     */
+    @Override
+    public void setDegradado(boolean rld) {
+    }
+    /**
+     * Establece el tipo de degradado (no hace nada ya que las lineas no tienen relleno).
+     * @param tpd: orientacion del degradado. 
+     */
+    @Override
+    public void setTipoDegradado(char tpd) {
     }
     /**
      * Devuelve un Rectangle que encierra a esta Linea.
@@ -110,6 +150,7 @@ public class Linea extends FiguraPro{
      */
     @Override
     public void setPosicion(double x1, double y1, double x2, double y2) {
+        super.setPosicion(x1, y1, x2, y2);
         ((Line2D.Float)miShape).setLine(x1, y1, x2, y2);
     }
 }

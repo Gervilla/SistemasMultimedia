@@ -1,5 +1,7 @@
 package Velazquez;
 
+import java.util.ArrayList;
+import sm.pgp.biblioteca.Figuras.FiguraPro;
 import sm.pgp.biblioteca.Lienzos.LienzoImagen2D;
 
 /**
@@ -9,14 +11,19 @@ import sm.pgp.biblioteca.Lienzos.LienzoImagen2D;
 public class VentanaInterna extends javax.swing.JInternalFrame
 {
     private VentanaPaint miVentana;
+    
     /**
      * Constructor de la clase.
+     * @param x: ancho.
+     * @param y: alto.
      * @param v: ventana principal.
      */
-    public VentanaInterna(VentanaPaint v){
+    public VentanaInterna(int x, int y, VentanaPaint v){
         initComponents();
-        this.setSize(500, 400);
+        this.setSize(x, y);
         miVentana = v;
+        lienzo.setClipArea(x, y);
+        vFigura = new ArrayList();
     }
     
     /*public void AsignarEscritorio(VentanaPaint v){
@@ -46,6 +53,11 @@ public class VentanaInterna extends javax.swing.JInternalFrame
             }
         });
 
+        lienzo.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                lienzoMouseDragged(evt);
+            }
+        });
         lienzo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 lienzoMouseReleased(evt);
@@ -65,22 +77,38 @@ public class VentanaInterna extends javax.swing.JInternalFrame
         //this.getLienzo().setImagen(this.getLienzo().getImagen(true));
         
         if (!lienzo.isEditable()){
-            miVentana.vFigura.add(this.getLienzo().getFiguraActual());
+            vFigura.add(this.getLienzo().getFiguraActual());
             miVentana.cargarLista();
         }
     }//GEN-LAST:event_lienzoMouseReleased
     /**
-     * Limpia la lista de figuras de la ventana principal si se cierra esta ventana.
+     * Limpia la lista de figuras de la ventana actual si se cierra esta ventana o la restablece si se selecciona.
      * @param evt: Objeto de evento de tipo PropertyChangeEvent.
      */
     private void formPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_formPropertyChange
+        int i = 0;
         if(evt.getPropertyName().equals("closed")){
-            miVentana.vFigura.clear();
+            if(i==0)//el evento de cierre se llama dos veces, con esto eliminamos el duplicado (podria y ha dado problemas).
+                i++;
+            else{
+                i=0;
+                miVentana.cargarLista();
+            }
+        }
+        if (evt.getPropertyName().equals("selected")){
+            miVentana.cargarAtributos();
             miVentana.cargarLista();
+        }
+        if(evt.getPropertyName().equals("ancestor")){
+            lienzo.setTipo(miVentana.getHerramienta());
         }
     }//GEN-LAST:event_formPropertyChange
 
-
+    private void lienzoMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lienzoMouseDragged
+        miVentana.setXY(lienzo.getFiguraActual().getPosicion());
+    }//GEN-LAST:event_lienzoMouseDragged
+    protected ArrayList<FiguraPro> vFigura;
+    protected boolean noContieneVideo;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane;
     private sm.pgp.biblioteca.Lienzos.LienzoImagen2D lienzo;

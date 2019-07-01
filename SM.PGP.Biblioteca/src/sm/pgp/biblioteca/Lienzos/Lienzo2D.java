@@ -1,18 +1,12 @@
 package sm.pgp.biblioteca.Lienzos;
 
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.Stroke;
 import java.util.ArrayList;
 import sm.pgp.biblioteca.Figuras.Tipo;
 import sm.pgp.biblioteca.Figuras.FiguraPro;
@@ -26,46 +20,51 @@ import sm.pgp.biblioteca.Figuras.Trazo;
  * @author gervi
  */
 public class Lienzo2D extends javax.swing.JPanel {
-
+    
+    // Atributos de dibujo
     private Color colorTrazoAct;
     private Color colorRellenoAct;
+    private Color colorRellenoAct2;
+    /**
+     * tipo de figura.
+     */
     private Tipo tipo;
     private boolean rellenar;
-    private float trazo; 
-    private Point p1, p2;
+    private boolean degradado;
+    private char tipoDegradado;
+    private boolean continuo;
+    private float grosor;
+    private boolean renderizar;
+    private boolean transparencia;
+    private float nivelTransp;
+    // Atributos del lienzo
+    private Point p1, p2, puntoAnterior;
     private FiguraPro actualShape;
     private ArrayList<FiguraPro> vShape;
-    boolean editar;
-    boolean renderizar;
-    boolean transparencia;
-    Shape clipArea;
-    Rectangle marco;
-    int figuraSelec = -1;
-    double diferenciaX1 = 0;
-    double diferenciaY1 = 0;
-    double diferenciaX2 = 0;
-    double diferenciaY2 = 0;
+    private Shape clipArea;
+    private int figuraSelec;
+    private boolean editar;
     /**
      * Constructor de la clase
      */
     public Lienzo2D() {
         colorTrazoAct = Color.BLACK;
         colorRellenoAct = Color.BLACK;
+        colorRellenoAct2 = Color.BLACK;
         tipo = Tipo.TRAZO;
-        trazo = 1;
+        grosor = 1;
         vShape = new ArrayList();
         editar = false;
         renderizar = false;
         transparencia = false;
+        nivelTransp = 0.5f;
+        continuo = true;
         clipArea = null;
-        marco = new Rectangle();
         figuraSelec = -1;
+        actualShape = new Trazo(colorTrazoAct, grosor, renderizar, transparencia, continuo, nivelTransp);
         
         initComponents();
-        setClipArea(500, 400);
-        //System.out.println(this.editar);
     }
-    
     /**
      * Metodo paint que sobrecarga el de JComponent añadiendo mas funciones de dibujo.
      * @param g: objeto de la clase Graphics de Java.awt.
@@ -75,22 +74,27 @@ public class Lienzo2D extends javax.swing.JPanel {
         super.paint(g);
         Graphics2D g2d = (Graphics2D)g;
         g2d.setClip(clipArea);
-        int i = 0;
         for (FiguraPro f:vShape){
-            setAtributos(f, g2d);
-            g2d.draw(f.getShape());
-            if(i == figuraSelec && marco != null){
-                pintarMarco(g2d);
-            }
-            i++;
+            f.paint(g);
         }
     }
     /**
      * Establece cual es el indice de la figura seleccionada en vShape.
      * @param i: indice de la figura.
      */
-    public void setIndexFiguraSelec(int i){
-        figuraSelec = i;
+    public void setFiguraSelec(int i){
+        if (i == -1){
+            vShape.get(figuraSelec).setSelected(false);
+            figuraSelec = i;
+        }
+        else{
+            if (figuraSelec >= 0)
+                vShape.get(figuraSelec).setSelected(false);
+            
+            figuraSelec = i;
+            vShape.get(figuraSelec).setSelected(true);
+        }
+        repaint();
     }
     /**
      * Devuelve cual es el indice de la figura seleccionada en vShape.
@@ -108,6 +112,13 @@ public class Lienzo2D extends javax.swing.JPanel {
         return vShape.get(i);
     }
     /**
+     * Establece como figura actual la seleccionada.
+     * @param i: indice de la digura.
+     */
+    public void setActualShape(int i){
+        actualShape = vShape.get(i);
+    }
+    /**
      * Devuelve la figura actual.
      * @return la figura actual.
      */
@@ -115,63 +126,22 @@ public class Lienzo2D extends javax.swing.JPanel {
         return actualShape;
     }
     /**
-     * Establece el marco de seleccion para las figuras.
-     * @param m: marco de tipo Rectangle.
+     * Borra la figura seleccionada.
+     * @param i: indice de la figura seleccionada.
      */
-    public void setMarco(Rectangle m){
-        if (m != null)
-            marco = m;
-        repaint();
+    public void borrarFiguraSelec(int i){
+        actualShape = vShape.get(/*vShape.size()*/-1);
+        //System.out.println(getIndexFiguraSelec());
+        //actualShape = new Trazo(colorTrazoAct, grosor, renderizar, transparencia, continuo, nivelTransp);
+        //vShape.remove(i);
     }
     /**
-     * Pinta el marco como un rectangulo rojo discontinuo.
-     * @param g2d: objeto de la clase Graphics2D de Java.awt.
+     * Establece si el trazo es continuo o discontinuo en el lienzo y a en la figura.
+     * @param c 
      */
-    public void pintarMarco(Graphics2D g2d){
-        g2d.setColor(Color.RED);
-        
-        Stroke trazo;
-        float patronDiscontinuidad[] = {5.0f, 5.0f};
-        trazo = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.0f, patronDiscontinuidad, 0.0f);
-        g2d.setStroke(trazo);
-        g2d.draw(marco);
-    }
-    /**
-     * Aplica los atrbutos especificos de cada figura.
-     * @param f: figura a la que aplicarle los atributos.
-     * @param g2d: objeto de la clase Graphics2D de Java.awt.
-     */
-    protected void setAtributos(FiguraPro f, Graphics2D g2d){
-        //Color
-        g2d.setColor(f.getColorTrazo());
-        
-        //Trazo
-        Stroke trazo;
-        trazo = new BasicStroke(f.getTrazo(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER, 1.0f);
-        g2d.setStroke(trazo);
-
-        //Transparencia
-        if(f.getTransparencia()){
-            Composite composicion;
-            composicion = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-            g2d.setComposite(composicion);
-        }
-
-        //Relleno
-        if(f.getRelleno()){
-            Paint relleno;
-            relleno = f.getColorRelleno();
-            g2d.setPaint(relleno);
-            g2d.fill(f.getShape());
-                
-        }
-
-        //Opciones de renderizado
-        if(f.getRenderizado()){
-            RenderingHints render;
-            render = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setRenderingHints(render);
-        }
+    public void setContinuidad(boolean c){
+        continuo = c;
+        this.actualShape.setContinuidad(c);
     }
     /**
      * Establece el color del trazo en el lienzo y en la figura actual.
@@ -180,30 +150,121 @@ public class Lienzo2D extends javax.swing.JPanel {
     public void setColorTrazo(Color color){
         colorTrazoAct = color;
         this.actualShape.setColorTrazo(color);
+        
+    }
+    /**
+     * Devuelve el color de trazo activo o la figura.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return el color de trazo activo o de la figura.
+     */
+    public Color getColorTrazo(boolean getFigura){
+        if(getFigura){
+            return actualShape.getColorTrazo();
+        }
+        else
+            return colorTrazoAct;
     }
     /**
      * Establece el color del relleno en el lienzo y en la figura actual.
      * @param color: nuevo color.
      */
     public void setColorRelleno(Color color){
-        colorRellenoAct = color;
         this.actualShape.setColorRelleno(color);
+        this.colorRellenoAct = color;
+        repaint();
     }
     /**
-     * Establece si la figura actual tiene relleno o no.
+     * Establece el color del relleno secundario en el lienzo y en la figura actual.
+     * @param color: nuevo color.
+     */
+    public void setColorRelleno2(Color color){
+        this.actualShape.setColorRelleno2(color);
+        this.colorRellenoAct2 = color;
+        repaint();
+    }
+    /**
+     * Devuelve el color de relleno activo o la figura.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return el color de relleno activo o de la figura.
+     */
+    public Color getColorRelleno(boolean getFigura){
+        if(getFigura){
+            return actualShape.getColorRelleno();
+        }
+        else
+            return colorRellenoAct;
+    }
+    /**
+     * Devuelve el color de relleno secundario activo o la figura.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return el color de relleno activo o de la figura.
+     */
+    public Color getColorRelleno2(boolean getFigura){
+        if(getFigura){
+            return actualShape.getColorRelleno2();
+        }
+        else
+            return colorRellenoAct2;
+    }
+    /**
+     * Establece si la figura actual y el lienzo tienen relleno o no.
      * @param rll: si la figura actual tiene relleno o no.
      */
     public void setRelleno(boolean rll){
         this.actualShape.setRelleno(rll);
+        this.rellenar = rll;
         repaint();
     }
     /**
-     * Establece el grosor del trazo de la figura actual.
+     * Establece si la figura actual y el lienzo tienen relleno con degradado o no.
+     * @param rld: si la figura actual tiene relleno con degradado o no.
+     */
+    public void setDegradado(boolean rld){
+        this.actualShape.setRelleno(rld);
+        this.degradado = rld;
+        repaint();
+    }
+    /**
+     * Establece la orientacion del degradado
+     * @param tpd: tipo de degradado.
+     */
+    public void setTipoDegradado(char tpd){
+        this.actualShape.setTipoDegradado(tpd);
+        this.tipoDegradado = tpd;
+        repaint();
+    }
+    /**
+     * Devuelve si el lienzo o la figura tiene habilitado el relleno.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return si el lienzo o la figura tiene habilitado el relleno.
+     */
+    public boolean getRelleno(boolean getFigura){
+        if(getFigura){
+            return actualShape.getRelleno();
+        }
+        else
+            return rellenar;
+    }
+    /**
+     * Establece el grosor del trazo en el lienzo y de la figura actual.
      * @param trazo: grosor de la figura.
      */
     public void setTrazo(float trazo){
         this.actualShape.setTrazo(trazo);
+        this.grosor = trazo;
         repaint();
+    }
+    /**
+     * Devuelve el tamaño de trazo del lienzo o la figura.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return el tamaño de trazo del lienzo o la figura.
+     */
+    public float getTrazo(boolean getFigura){
+        if(getFigura){
+            return actualShape.getTrazo();
+        }
+        else
+            return grosor;
     }
     /**
      * Establece tipo de la figuraactual.
@@ -213,20 +274,55 @@ public class Lienzo2D extends javax.swing.JPanel {
         this.tipo = tipo;
     }
     /**
-     * Establece si la figura actual tiene transparencia o no.
+     * Establece si la figura o el lienzo actual tiene transparencia o no.
      * @param t: si es o no transparente.
      */
     public void setTransparencia(boolean t){
         this.actualShape.setTransparencia(t);
+        this.transparencia = t;
         repaint();
     }
     /**
-     * Establece si la figura actual se renderiza o no.
+     * Establece el nivel de transparencia a aplicar a la figura.
+     * @param n: nivel de transparencia a aplicar.
+     */
+    public void setNivelTransparencia(float n){
+        this.actualShape.setNivelTransparencia(n);
+        this.nivelTransp = n;
+        repaint();
+    }
+    /**
+     * Devuelve si el lienzo o la figura tiene habilitado la transparencia.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return si el lienzo o la figura tiene habilitado la transparencia.
+     */
+    public boolean getTransparencia(boolean getFigura){
+        if(getFigura){
+            return actualShape.getTransparencia();
+        }
+        else
+            return transparencia;
+    }
+    /**
+     * Establece si la figura actual o el lienzo se renderiza o no.
      * @param r: si se renderiza o no.
      */
     public void setRenderizado(boolean r){
         this.actualShape.setRenderizado(r);
+        this.renderizar = r;
         repaint();
+    }
+    /**
+     * Devuelve si el lienzo o la figura tiene habilitado la renderizacion.
+     * @param getFigura: si devuelve el valor de la figura o el del lienzo.
+     * @return si el lienzo o la figura tiene habilitado la renderizacion.
+     */
+    public boolean getRenderizado(boolean getFigura){
+        if(getFigura){
+            return actualShape.getRenderizado();
+        }
+        else
+            return renderizar;
     }
     /**
      * Establece si se cambia al modo edicion.
@@ -249,8 +345,28 @@ public class Lienzo2D extends javax.swing.JPanel {
      */
     public void setClipArea(int x, int y){
         this.clipArea = new Rectangle(0, 0, x, y);
+        repaint();
     }
-
+    /**
+     * Devuelve el punto donde se situa la figura actual.
+     * @return el punto donde se situa la figura actual.
+     */
+    public Point getPosicion(){
+        return actualShape.getPosicion();
+    }
+    /**
+     * Establece la figura actual en la posicion especificada.
+     * @param x: componente en X de la posicion de la figura.
+     * @param y: componente en Y de la posicion de la figura.
+     */
+    public void setPosicion(double x, double y){
+        double nX1 = vShape.get(figuraSelec).getMinX() + (x - actualShape.getPosicion().x);
+        double nY1 = vShape.get(figuraSelec).getMinY() + (y - actualShape.getPosicion().y);
+        double nX2 = vShape.get(figuraSelec).getMaxX() + (x - actualShape.getPosicion().x);
+        double nY2 = vShape.get(figuraSelec).getMaxY() + (y - actualShape.getPosicion().y);
+        vShape.get(figuraSelec).setPosicion(nX1, nY1, nX2, nY2);
+        repaint();
+    }
     /**
      * initComponents generado por NetBeans
      */
@@ -279,27 +395,27 @@ public class Lienzo2D extends javax.swing.JPanel {
      * @param evt: Objeto de evento de tipo MouseEvent.
      */
     private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        p1 = evt.getPoint();
         if(!this.editar){
-            p1 = evt.getPoint();
             switch (tipo){
                 case TRAZO:
-                    actualShape = new Trazo(colorTrazoAct);
+                    actualShape = new Trazo(colorTrazoAct, grosor, renderizar, transparencia, continuo, nivelTransp);
                     ((Trazo)actualShape).moveOrigin(p1.x, p1.y);
                     vShape.add(actualShape);
                     break;
 
                 case LINEA:
-                    actualShape = new Linea(p1, p1, colorTrazoAct);
+                    actualShape = new Linea(p1, p1, colorTrazoAct, grosor, renderizar, transparencia, continuo, nivelTransp);
                     vShape.add(actualShape);
                     break;
 
                 case RECTANGULO:
-                    actualShape = new Rectangulo(p1, colorTrazoAct, colorRellenoAct);
+                    actualShape = new Rectangulo(p1, colorTrazoAct, colorRellenoAct, colorRellenoAct2, grosor, rellenar, degradado, tipoDegradado, transparencia, renderizar, continuo, nivelTransp);
                     vShape.add(actualShape);
                     break;
 
                 case OVALO:
-                    actualShape = new Ovalo(p1.x, p1.y, 0, 0, colorTrazoAct, colorRellenoAct);
+                    actualShape = new Ovalo(p1.x, p1.y, 0, 0, colorTrazoAct, colorRellenoAct, colorRellenoAct2, grosor, rellenar, degradado, tipoDegradado, transparencia, renderizar, continuo, nivelTransp);
                     vShape.add(actualShape);
                     break;
 
@@ -309,14 +425,7 @@ public class Lienzo2D extends javax.swing.JPanel {
             }
         }
         else{
-            diferenciaX1 = evt.getX() - vShape.get(figuraSelec).getMinX();
-            diferenciaY1 = evt.getY() - vShape.get(figuraSelec).getMinY();
-            //diferenciaX2 = evt.getX() - vShape.get(figuraSelec).getMaxX();
-            //diferenciaY2 = evt.getY() - vShape.get(figuraSelec).getMaxY();
-            System.out.println(vShape.get(figuraSelec).getMinX());
-            System.out.println(vShape.get(figuraSelec).getMinY() + "\n");
-            //System.out.println(diferenciaX2);
-            //System.out.println(diferenciaY2);
+            puntoAnterior = p1;
         }
     }//GEN-LAST:event_formMousePressed
     /**
@@ -332,8 +441,8 @@ public class Lienzo2D extends javax.swing.JPanel {
      * @param evt: Objeto de evento de tipo MouseEvent. 
      */
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
+        p2 = evt.getPoint();
         if(!this.editar){
-            p2 = evt.getPoint();
             switch (tipo){
                 case TRAZO:
                     ((Trazo)actualShape).lineToPoint(p2.x, p2.y);
@@ -357,16 +466,16 @@ public class Lienzo2D extends javax.swing.JPanel {
             }
         }
         else{
-            FiguraPro f = vShape.get(figuraSelec);
-            double nX1 = vShape.get(figuraSelec).getMinX() + diferenciaX1;
-            double nY1 = vShape.get(figuraSelec).getMinY() + diferenciaY1;
-            double nX2 = nX1;
-            double nY2 = nY1;
-            f.setPosicion(nX1, nY1, nX2, nY2);
+            double nX1 = vShape.get(figuraSelec).getMinX() + (p2.x - puntoAnterior.x);
+            double nY1 = vShape.get(figuraSelec).getMinY() + (p2.y - puntoAnterior.y);
+            double nX2 = vShape.get(figuraSelec).getMaxX() + (p2.x - puntoAnterior.x);
+            double nY2 = vShape.get(figuraSelec).getMaxY() + (p2.y - puntoAnterior.y);
+            vShape.get(figuraSelec).setPosicion(nX1, nY1, nX2, nY2);
+            puntoAnterior = p2;
         }
         this.repaint();
     }//GEN-LAST:event_formMouseDragged
-
+    
     
 
 

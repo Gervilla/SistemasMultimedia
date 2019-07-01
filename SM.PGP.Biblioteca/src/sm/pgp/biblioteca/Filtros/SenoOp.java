@@ -8,7 +8,7 @@ import static java.lang.Math.sin;
  * Clase con un unico metodo que proporciona un LookupTable mediante una funcion seno.
  * @author gervi
  */
-public class Seno {
+public class SenoOp {
     /**
      * Devuelve un LookupTable de una funcion seno.
      * @param w: angulo en grados.

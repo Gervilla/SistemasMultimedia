@@ -15,12 +15,23 @@ public class Trazo extends FiguraPro{
     /**
      * Constructor de la clase.
      * @param ct: color de trazo.
+     * @param tz: grosor del trazo.
+     * @param r: opcion de renderizado.
+     * @param tp: con transparencia
+     * @param con: continuidad de trazo.
+     * @param nt: nivel de transparencia.
      */
-    public Trazo(Color ct){
+    public Trazo(Color ct, float tz, boolean r, boolean tp, boolean con, float nt){
         super();
-        tipo = Tipo.TRAZO;
-        colorTrazo = ct;
-        miShape = new GeneralPath.Float();
+        this.tipo = Tipo.TRAZO;
+        this.colorTrazo = ct;
+        this.grosor = tz;
+        this.renderizar = r;
+        this.transparencia = tp;
+        this.continuo = con;
+        this.nivelTransp = nt;
+        
+        this.miShape = new GeneralPath.Float();
     }
     /**
      * Agrega un punto a la ruta moviendo las coordenadas especificadas con precisión float.
@@ -48,11 +59,26 @@ public class Trazo extends FiguraPro{
     public void setColorRelleno(Color color) {
     }
     /**
+     * Establece el color de relleno secundario (no hace nada ya que las lineas no tienen relleno).
+     * @param color: nuevo color.
+     */
+    @Override
+    public void setColorRelleno2(Color color) {
+    }
+    /**
      * Devuelve el color del relleno(no hace nada ya que las lineas no tienen relleno).
      * @return el color del trazo al no tener relleno.
      */
     @Override
     public Color getColorRelleno() {
+        return this.getColorTrazo();
+    }
+    /**
+     * Devuelve el color del relleno secundario.
+     * @return el color del relleno secundario.
+     */
+    @Override
+    public Color getColorRelleno2(){
         return this.getColorTrazo();
     }
     /**
@@ -119,8 +145,22 @@ public class Trazo extends FiguraPro{
      */
     @Override
     public void setPosicion(double x1, double y1, double x2, double y2) {
-        //recContenedor.setFrameFromDiagonal(x1, y1, x2, y2);
+        super.setPosicion(x1, y1, x2, y2);
         ((GeneralPath.Float)miShape).moveTo(x1, y1);
+    }
+    /**
+     * Establece si tiene o no degradado (no hace nada ya que las lineas no tienen relleno).
+     * @param rld: si tiene degradado o no.
+     */
+    @Override
+    public void setDegradado(boolean rld) {
+    }
+    /**
+     * Establece el tipo de degradado (no hace nada ya que las lineas no tienen relleno).
+     * @param tpd: orientacion del degradado. 
+     */
+    @Override
+    public void setTipoDegradado(char tpd) {
     }
     
 }

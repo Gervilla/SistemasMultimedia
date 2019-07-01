@@ -10,17 +10,17 @@ import sm.image.BufferedImageOpAdapter;
  * Extiende de la clase BufferedImageOpAdapter.
  * @author gervi
  */
-public class SepiaOp extends BufferedImageOpAdapter{
+public class TritanOp extends BufferedImageOpAdapter{
     int r;
     int g;
     int b;
-    int sepiaR;
-    int sepiaG;
-    int sepiaB;
+    int TritanR;
+    int TritanG;
+    int TritanB;
     /**
      * Constructor de la clase.
      */
-    public SepiaOp () {}
+    public TritanOp () {}
     /**
      * Devuelve una BufferedImage a la que se le a aplicado un filtro sepia.
      * @param src: imagen de origen.
@@ -41,10 +41,19 @@ public class SepiaOp extends BufferedImageOpAdapter{
                 r = c.getRed();
                 g = c.getGreen();
                 b = c.getBlue();
-                sepiaR = (int) min(255, 0.393*r + 0.769*g + 0.189*b);
-                sepiaG = (int) min(255, 0.349*r + 0.686*g + 0.168*b);
-                sepiaB = (int) min(255, 0.272*r + 0.534*g + 0.131*b);
-                c = new Color(sepiaR, sepiaG, sepiaB);
+                
+                TritanR = (int) min(255, 0.95*r + 0.05*g + 0.0*b);
+                TritanG = (int) min(255, 0.0*r + 0.433*g + 0.567*b);
+                TritanB = (int) min(255, 0.0*r + 0.475*g + 0.525*b);
+                
+                /*TritanG = (int) min(255, 0.95*r + 0.05*g + 0.0*b);//Morado y verde
+                TritanR = (int) min(255, 0.0*r + 0.433*g + 0.567*b);
+                TritanB = (int) min(255, 0.0*r + 0.475*g + 0.525*b);
+                
+                TritanB = (int) min(255, 0.95*r + 0.05*g + 0.0*b);//Protanopia, azul y amarillo
+                TritanG = (int) min(255, 0.0*r + 0.433*g + 0.567*b);
+                TritanR = (int) min(255, 0.0*r + 0.475*g + 0.525*b);*/
+                c = new Color(TritanR, TritanG, TritanB);
                 src.setRGB(x,y,c.getRGB());
             }
         }

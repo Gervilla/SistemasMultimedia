@@ -2,6 +2,9 @@ package sm.pgp.biblioteca.Figuras;
 
 
 import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -13,21 +16,48 @@ import java.awt.Rectangle;
  */
 public class Rectangulo extends FiguraPro{
     
-    protected boolean rellenar = false;
+    protected boolean rellenar;
+    protected boolean degradado;
+    private char tipoDegradado;
+    protected Point p1;
+    protected Point p2;
     protected Color colorRelleno;
+    protected Color colorRelleno2;
+    protected Paint relleno;
+    
 
     /**
      * Constructor de la clase.
      * @param p1: punto inicial.
      * @param ct: colorde trazo.
      * @param cr: color de relleno.
+     * @param cr2: color de relleno secundario.
+     * @param gr: grosor de trazo.
+     * @param rll: con relleno.
+     * @param rld: con degradado.
+     * @param tpd: orientacion del degradado.
+     * @param r: opcion de renderizado.
+     * @param tp: con transparencia
+     * @param con: continuidad de trazo.
+     * @param nt: nivel de transparencia.
      */
-    public Rectangulo(Point p1, Color ct, Color cr){
+    public Rectangulo(Point p1, Color ct, Color cr, Color cr2, float gr, boolean rll, boolean rld, char tpd, boolean tp, boolean r, boolean con, float nt){
         super();
-        tipo = Tipo.RECTANGULO;
-        colorTrazo = ct;
-        colorRelleno = cr;
-        miShape = new Rectangle(p1);
+        this.tipo = Tipo.RECTANGULO;
+        this.colorTrazo = ct;
+        this.colorRelleno = cr;
+        this.colorRelleno2 = cr2;
+        this.grosor = gr;
+        this.renderizar = r;
+        this.transparencia = tp;
+        this.rellenar = rll;
+        this.degradado = rld;
+        this.tipoDegradado = tpd;
+        this.relleno = colorRelleno;
+        this.continuo = con;
+        this.nivelTransp = nt;
+        
+        this.miShape = new Rectangle(p1);
     }
     /**
      * Costructor de la clase.
@@ -43,6 +73,47 @@ public class Rectangulo extends FiguraPro{
         colorTrazo = ct;
         colorRelleno = cr;
         miShape = new Rectangle(x, y, w, h);
+    }
+    /**
+     * Metodo que aplica los atributos de la figura.
+     * @param f: figura a la que aplicarle los atributos.
+     * @param g2d: objeto de la clase Graphics2D de Java.awt.
+     */
+    @Override
+    protected void setAtributos(FiguraPro f, Graphics2D g2d){
+        if(rellenar){
+            if (degradado){
+                switch (tipoDegradado){
+                    case 'h':
+                        p1 = new Point(((int)this.getMinX()), ((int)this.getMaxY()) - ((int)this.getMinY()));
+                        p2 = new Point(((int)this.getMaxX()), ((int)this.getMaxY()) - ((int)this.getMinY()));
+                        break;
+                    case 'd':
+                        p1 = new Point(((int)this.getMinX()), ((int)this.getMinY()));
+                        p2 = new Point(((int)this.getMaxX()), ((int)this.getMaxY()));
+                        break;
+                    case 'i':
+                        p1 = new Point(((int)this.getMinX()), ((int)this.getMaxY()));
+                        p2 = new Point(((int)this.getMaxX()), ((int)this.getMinY()));
+                        break;
+                    case 'v':
+                        p1 = new Point(((int)this.getMaxX()) - ((int)this.getMinX()), ((int)this.getMinY()));
+                        p2 = new Point(((int)this.getMaxX()) - ((int)this.getMinX()), ((int)this.getMaxY()));
+                        break;
+                }
+                relleno = new GradientPaint(p1, colorRelleno, p2, colorRelleno2);
+            }
+            else{
+                /*p1 = new Point(((int)this.getMinX()), ((int)this.getMinY()));
+                p2 = new Point(((int)this.getMaxX()), ((int)this.getMaxY()));
+                relleno = new GradientPaint(p1, colorRelleno, p2, colorRelleno);*/
+                relleno = colorRelleno;
+            }
+            
+            g2d.setPaint(relleno);
+            g2d.fill(f.getShape());
+        }
+        super.setAtributos(f, g2d);
     }
     /**
      * Establece la diagonal del Rectangulo en base a dos puntos.
@@ -63,6 +134,14 @@ public class Rectangulo extends FiguraPro{
         this.colorRelleno = color;
     }
     /**
+     * Establece el color de relleno secundario.
+     * @param color: nuevo color.
+     */
+    @Override
+    public void setColorRelleno2(Color color){
+        this.colorRelleno2 = color;
+    }
+    /**
      * Devuelve el color del relleno.
      * @return el color del relleno.
      */
@@ -71,12 +150,36 @@ public class Rectangulo extends FiguraPro{
         return colorRelleno;
     }
     /**
+     * Devuelve el color del relleno secundario.
+     * @return el color del relleno secundario.
+     */
+    @Override
+    public Color getColorRelleno2(){
+        return colorRelleno2;
+    }
+    /**
      * Establece si esta FiguraPro tiene relleno o no.
      * @param rll: si tiene relleno o no.
      */
     @Override
     public void setRelleno(boolean rll){
         this.rellenar = rll;
+    }
+    /**
+     * Establece si la figura actual y el lienzo tienen relleno con degradado o no.
+     * @param rld: si la figura actual tiene relleno con degradado o no.
+     */
+    @Override
+    public void setDegradado(boolean rld){
+        this.degradado = rld;
+    }
+    /**
+     * Establece la orientacion del degradado
+     * @param tpd: tipo de degradado.
+     */
+    @Override
+    public void setTipoDegradado(char tpd){
+        this.tipoDegradado = tpd;
     }
     /**
      * Devuelve si esta FiguraPro tiene relleno o no.
@@ -135,6 +238,7 @@ public class Rectangulo extends FiguraPro{
      */
     @Override
     public void setPosicion(double x1, double y1, double x2, double y2) {
+        super.setPosicion(x1, y1, x2, y2);
         ((Rectangle)miShape).setFrameFromDiagonal(x1, y1, x2, y2);
     }
 }
