@@ -12,6 +12,7 @@ ordenada. En dicha interfaz están presentes todos los elementos
 necesarios para tratar de forma eficaz los medios descritos. Entre otros, la
 aplicación podrá:
 
+
    - Gestionar la creación, apertura y guardado de archivos multimedia.
    - Dibujar diferentes tipos de figuras.
    - Cambiar los atributos y propiedades de dichas figuras.
