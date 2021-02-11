@@ -19,5 +19,10 @@ aplicación podrá:
     - Reproducir archivos de audio.
     - Mostrar video.
 
-    Más adelante se detallaran todas las funciones de las que dispone el
-programa.
+    Interfaz de usuario
+
+![img](https://github.com/Gervilla/SistemasMultimedia/blob/master/Interfaz.PNG)
+
+El programa, entre otras cosas, tiene efectos filtros y efectos como sepia, tinte de color, ecualizacion, negativo, funcion seno, media, binomial, enfoque, relieve, laplaciano y funciones propias como son (a la cual llame) colorizacion, mezcla termica y un filtro de daltonismo el cual transforma la imagen en como la veria uno de los 3 tipos de daltonicos dicromaticos.
+
+<H3>Para una informacion mas clara del programa, el pdf contiene una documentacion completa con todas las funcionalidades, manual de usuario y todos los diagramas, requisitos y procedimientos creados y seguidos durante todo el proyecto</H3>
