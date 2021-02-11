@@ -10,7 +10,9 @@ import java.awt.image.BufferedImage;
  * @author gervi
  */
 public class LienzoImagen2D extends Lienzo2D {
-
+    /**
+     * Imagen cargada en el lienzo.
+     */
     private BufferedImage imagen;
     /**
      * Constructor de la clase.
@@ -55,7 +57,7 @@ public class LienzoImagen2D extends Lienzo2D {
         this.imagen = imagen;
         if(imagen!=null)
             setPreferredSize(new Dimension(imagen.getWidth(),imagen.getHeight()));
-        //*******************************************************************************************************************************************
+        
     }
     /**
      * initComponents generado por NetBeans.

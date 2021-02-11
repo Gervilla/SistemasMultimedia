@@ -19,6 +19,9 @@ import sm.image.BufferedImageOpAdapter;
  * @author gervi
  */
 public class ColorizacionOp extends BufferedImageOpAdapter{
+    /**
+     * Color a umbralizar.
+     */
     private int color;
     /**
      * Constructor de la clase.

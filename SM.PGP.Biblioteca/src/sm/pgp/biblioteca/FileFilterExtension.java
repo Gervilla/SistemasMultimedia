@@ -8,8 +8,13 @@ import javax.swing.filechooser.FileFilter;
  * @author gervi
  */
 public class FileFilterExtension extends FileFilter{
-    
+    /**
+     * Extension del archivo.
+     */
     private final String extension;
+    /**
+     * Descripcion de la extension del archivo.
+     */
     private final String descripcion;
     /**
      * Constructor por defecto de la clase.

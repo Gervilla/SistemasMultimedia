@@ -11,11 +11,29 @@ import sm.image.BufferedImageOpAdapter;
  * @author gervi
  */
 public class SepiaOp extends BufferedImageOpAdapter{
+    /**
+     * Componente rojo del pixel.
+     */
     int r;
+    /**
+     * Componente verde del pixel.
+     */
     int g;
+    /**
+     * Componente azu del pixel.
+     */
     int b;
+    /**
+     * Componente rojo con efecto sepia.
+     */
     int sepiaR;
+    /**
+     * Componente verde con efecto sepia.
+     */
     int sepiaG;
+    /**
+     * Componente azul con efecto sepia.
+     */
     int sepiaB;
     /**
      * Constructor de la clase.

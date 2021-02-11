@@ -15,15 +15,38 @@ import java.awt.Rectangle;
  * @author gervi
  */
 public class Rectangulo extends FiguraPro{
-    
-    protected boolean rellenar;
-    protected boolean degradado;
+    /**
+     * Si la figura tiene relleno.
+     */
+    private boolean rellenar;
+    /**
+     * Si la figura tiene degradado.
+     */
+    private boolean degradado;
+    /**
+     * Orientacion del degradado.
+     */
     private char tipoDegradado;
-    protected Point p1;
-    protected Point p2;
-    protected Color colorRelleno;
-    protected Color colorRelleno2;
-    protected Paint relleno;
+    /**
+     * Punto de relleno 1.
+     */
+    private Point p1;
+    /**
+     * Punto de relleno 2.
+     */
+    private Point p2;
+    /**
+     * Color de relleno frontal.
+     */
+    private Color colorRelleno;
+    /**
+     * Color de relleno trasero.
+     */
+    private Color colorRelleno2;
+    /**
+     * Variable de control del relleno.
+     */
+    private Paint relleno;
     
 
     /**

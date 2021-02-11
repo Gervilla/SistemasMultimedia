@@ -10,8 +10,17 @@ import sm.image.BufferedImageOpAdapter;
  * @author gervi
  */
 public class NegativoOp extends BufferedImageOpAdapter{
+    /**
+     * Componente rojo del pixel.
+     */
     int r;
+    /**
+     * Componente verde del pixel.
+     */
     int g;
+    /**
+     * Componente azul del pixel.
+     */
     int b;
     /**
      * Constructor de la clase.

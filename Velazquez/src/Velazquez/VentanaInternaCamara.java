@@ -11,11 +11,14 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 /**
- *
+ * Ventana interna al escritorio de la ventana principal dedicada al uso de la webcam.
  * @author gervi
  */
 public class VentanaInternaCamara extends javax.swing.JInternalFrame {
 
+    /**
+     * Webcam.
+     */
     private Webcam camara = null;
     /**
      * Constructor de la clase.

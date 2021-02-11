@@ -18,19 +18,57 @@ import java.awt.Stroke;
  * @author gervi
  */
 public abstract class FiguraPro{
+    /**
+     * Color de trazo.
+     */
     protected Color colorTrazo;
+    /**
+     * Tipo de subfigura.
+     */
     protected Tipo tipo;
+    /**
+     * Grosor del trazo.
+     */
     protected float grosor;
+    /**
+     * Si la figura se renderiza.
+     */
     protected boolean renderizar;
+    /**
+     * Si la figura tiene transparencia.
+     */
     protected boolean transparencia;
+    /**
+     * Si el trazo es continuo.
+     */
     protected boolean continuo;
+    /**
+     * Grado de transparencia, desde invisible hasta opaco.
+     */
     protected float nivelTransp;
+    /**
+     * Variable de control del trazo.
+     */
     protected Stroke trazo;
+    /**
+     * Variable de control de la transparencia.
+     */
     protected Composite composicion;
+    /**
+     * Variable de control del renderizado.
+     */
     protected RenderingHints render;
+    /**
+     * Si la figura esta seleccionada.
+     */
     protected boolean imSelected;
-    
+    /**
+     * Objeto Shape de la figura.
+     */
     protected Shape miShape = null;
+    /**
+     * Marco de seleccion de la figura.
+     */
     private Rectangle marco;
     
     /**
@@ -57,11 +95,11 @@ public abstract class FiguraPro{
      */
     public void paint(Graphics g){
         Graphics2D g2d = (Graphics2D)g;
-        setAtributos(this, g2d);
-        g2d.draw(miShape);
         if(imSelected){
             pintarMarco(g2d);
         }
+        setAtributos(this, g2d);
+        g2d.draw(miShape);
     }
     /**
      * Metodo que aplica los atributos de la figura.

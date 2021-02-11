@@ -10,7 +10,14 @@ import sm.pgp.biblioteca.Lienzos.LienzoImagen2D;
  */
 public class VentanaInterna extends javax.swing.JInternalFrame
 {
+    /**
+     * Ventana principal en la que se aloja esta ventana interna.
+     */
     private VentanaPaint miVentana;
+    /**
+     * Copia del vector de figuras del lienzo.
+     */
+    protected ArrayList<FiguraPro> vFigura;
     
     /**
      * Constructor de la clase.
@@ -107,8 +114,7 @@ public class VentanaInterna extends javax.swing.JInternalFrame
     private void lienzoMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lienzoMouseDragged
         miVentana.setXY(lienzo.getFiguraActual().getPosicion());
     }//GEN-LAST:event_lienzoMouseDragged
-    protected ArrayList<FiguraPro> vFigura;
-    protected boolean noContieneVideo;
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane;
     private sm.pgp.biblioteca.Lienzos.LienzoImagen2D lienzo;

@@ -21,29 +21,87 @@ import sm.pgp.biblioteca.Figuras.Trazo;
  */
 public class Lienzo2D extends javax.swing.JPanel {
     
-    // Atributos de dibujo
+    /**
+     * Color de trazo del lienzo.
+     */
     private Color colorTrazoAct;
+    /**
+     * Color de relleno del lienzo.
+     */
     private Color colorRellenoAct;
+    /**
+     * Color de relleno secundario del lienzo.
+     */
     private Color colorRellenoAct2;
     /**
      * tipo de figura.
      */
     private Tipo tipo;
+    /**
+     * Si las figuras a pintar tienen relleno.
+     */
     private boolean rellenar;
+    /**
+     * Si las figuras a pintar tienen deradado.
+     */
     private boolean degradado;
+    /**
+     * Orientacion del degradado.
+     */
     private char tipoDegradado;
+    /**
+     * Si las figuras a pintar tienen traco continuo o discontinuo.
+     */
     private boolean continuo;
+    /**
+     * Grosordel trazo de las figuras a pintar.
+     */
     private float grosor;
+    /**
+     * Si las figuras a pintar tienen opcion de renderizado.
+     */
     private boolean renderizar;
+    /**
+     * Si las figuras a pintar tienen transparencia.
+     */
     private boolean transparencia;
+    /**
+     * Nivel de transparencia de las figuras.
+     */
     private float nivelTransp;
-    // Atributos del lienzo
-    private Point p1, p2, puntoAnterior;
+    /**
+     * Punto inicial de las figuras.
+     */
+    private Point p1;
+    /**
+     * punto final de las figuras.
+     */
+    private Point p2;
+    /**
+     * Punto tomado en el instante anterior.
+     */
+    private Point puntoAnterior;
+    /**
+     * Figura actual.
+     */
     private FiguraPro actualShape;
+    /**
+     * Vector de figuras dibujadas.
+     */
     private ArrayList<FiguraPro> vShape;
+    /**
+     * Area de recorte del lienzo.
+     */
     private Shape clipArea;
+    /**
+     * Indice de la figura seleccionada.
+     */
     private int figuraSelec;
+    /**
+     * Si el lienzo esta en modo edicion o no (modo dibujo).
+     */
     private boolean editar;
+    
     /**
      * Constructor de la clase
      */
@@ -360,6 +418,7 @@ public class Lienzo2D extends javax.swing.JPanel {
      * @param y: componente en Y de la posicion de la figura.
      */
     public void setPosicion(double x, double y){
+        
         double nX1 = vShape.get(figuraSelec).getMinX() + (x - actualShape.getPosicion().x);
         double nY1 = vShape.get(figuraSelec).getMinY() + (y - actualShape.getPosicion().y);
         double nX2 = vShape.get(figuraSelec).getMaxX() + (x - actualShape.getPosicion().x);

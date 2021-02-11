@@ -16,16 +16,46 @@ import java.awt.geom.Ellipse2D;
  */
 public class Ovalo extends FiguraPro{
     
-    protected boolean rellenar;
-    protected boolean degradado;
-    protected char tipoDegradado;
-    protected Point p1;
-    protected Point p2;
-    protected Color colorRelleno;
-    protected Color colorRelleno2;
-    protected Paint relleno;
-    protected double w;
-    protected double h;
+    /**
+     * Si la figura tiene relleno.
+     */
+    private boolean rellenar;
+    /**
+     * Si la figura tiene degradado.
+     */
+    private boolean degradado;
+    /**
+     * Orientacion del degradado.
+     */
+    private char tipoDegradado;
+    /**
+     * Punto de relleno 1.
+     */
+    private Point p1;
+    /**
+     * Punto de relleno 2.
+     */
+    private Point p2;
+    /**
+     * Color de relleno frontal.
+     */
+    private Color colorRelleno;
+    /**
+     * Color de relleno trasero.
+     */
+    private Color colorRelleno2;
+    /**
+     * Variable de control del relleno.
+     */
+    private Paint relleno;
+    /**
+     * anchura de la figura.
+     */
+    private double w;
+    /**
+     * Altura de la figura.
+     */
+    private double h;
     /**
      * Costructor de la clase.
      * @param x: componente x de la posicion.

@@ -2,6 +2,7 @@ package sm.pgp.biblioteca.Figuras;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
 /**
@@ -10,8 +11,18 @@ import java.awt.geom.GeneralPath;
  * @author gervi
  */
 public class Trazo extends FiguraPro{
-    
+    /**
+     * Rectangulo que encierra el trazo.
+     */
     private Rectangle recContenedor;
+    /**
+     * Punto de transformacion en X.
+     */
+    private double tx;
+    /**
+     * Punto de transformacion en Y.
+     */
+    private double ty;
     /**
      * Constructor de la clase.
      * @param ct: color de trazo.
@@ -145,8 +156,11 @@ public class Trazo extends FiguraPro{
      */
     @Override
     public void setPosicion(double x1, double y1, double x2, double y2) {
+        tx = x1 - this.getMinX();
+        ty = y1 - this.getMinY();
+        ((GeneralPath.Float)miShape).transform(AffineTransform.getTranslateInstance(tx, ty));
+        recContenedor = ((GeneralPath.Float)miShape).getBounds();
         super.setPosicion(x1, y1, x2, y2);
-        ((GeneralPath.Float)miShape).moveTo(x1, y1);
     }
     /**
      * Establece si tiene o no degradado (no hace nada ya que las lineas no tienen relleno).

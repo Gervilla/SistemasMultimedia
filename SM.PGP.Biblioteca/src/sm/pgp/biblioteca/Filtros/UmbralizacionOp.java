@@ -10,6 +10,9 @@ import sm.image.BufferedImageOpAdapter;
  * @author gervi
  */
 public class UmbralizacionOp extends BufferedImageOpAdapter{
+    /**
+     * Nivel de umbral.
+     */
     private int umbral;
     /**
      * Constructor de la clase.

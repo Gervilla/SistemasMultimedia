@@ -1,19 +1,24 @@
 package Velazquez;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 /**
- * 
+ * Ventana interna al escritorio de la ventana principal dedicada a reproduccion de video.
  * @author gervi
  */
 public class VentanaInternaVideo extends javax.swing.JInternalFrame {
 
 
     /**
-     * Creates new form VentanaInternaVideo
+     * Reproductor de video.
      */
-    private EmbeddedMediaPlayer vlcplayer = null;
+    public EmbeddedMediaPlayer vlcplayer = null;
+    /**
+     * Archivo de video.
+     */
     private File fMedia;
     
     /**
@@ -25,7 +30,6 @@ public class VentanaInternaVideo extends javax.swing.JInternalFrame {
         initComponents();
         fMedia = f;
         EmbeddedMediaPlayerComponent aVisual = new EmbeddedMediaPlayerComponent();
-        System.out.println("funciona");
         getContentPane().add(aVisual,java.awt.BorderLayout.CENTER);
         vlcplayer = aVisual.getMediaPlayer();
         
@@ -42,17 +46,21 @@ public class VentanaInternaVideo extends javax.swing.JInternalFrame {
         VentanaInternaVideo v = new VentanaInternaVideo(f);
         return (v.vlcplayer!=null?v:null);
     }
-    
     /**
      * Inicia la reproducción del vídeo
      */
     public void play() {
         if (vlcplayer != null) {
-            if(vlcplayer.isPlayable()){
-            //Si se estaba reproduciendo
-                vlcplayer.play();
-            } else {
-                vlcplayer.playMedia(fMedia.getAbsolutePath());
+            if (vlcplayer.isPlaying()) {
+                vlcplayer.pause();
+            }
+            else{
+                if(vlcplayer.isPlayable()){
+                    vlcplayer.play();
+                }
+                else {
+                    vlcplayer.playMedia(fMedia.getAbsolutePath());
+                }
             }
         }
     }
@@ -61,13 +69,21 @@ public class VentanaInternaVideo extends javax.swing.JInternalFrame {
      */
     public void stop() {
         if (vlcplayer != null) {
-            if (vlcplayer.isPlaying()) {
-                vlcplayer.pause();
-            } else {
-                vlcplayer.stop();
-            }
+            vlcplayer.stop();
         }
-        vlcplayer = null;
+    }
+    public void addMediaPlayerEventListener(MediaPlayerEventListener ml) {
+        if (vlcplayer != null) {
+            vlcplayer.addMediaPlayerEventListener(ml);
+        }
+    }
+    /**
+     * Devuelve una imagen de una captura de pantalla de lo que haya en la ventana.
+     * @return devuelve la imagen capturada.
+     */
+    public BufferedImage getImagen(){
+        BufferedImage img = vlcplayer.getSnapshot();
+        return img;
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -105,6 +121,7 @@ public class VentanaInternaVideo extends javax.swing.JInternalFrame {
     private void formPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_formPropertyChange
         if(evt.getPropertyName().equals("closed")){
             stop();
+            vlcplayer = null;
         }
     }//GEN-LAST:event_formPropertyChange
 

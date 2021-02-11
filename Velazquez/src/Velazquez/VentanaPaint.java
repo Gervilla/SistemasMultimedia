@@ -53,23 +53,54 @@ import sm.pgp.biblioteca.FileFilterExtension;
 import sm.pgp.biblioteca.Filtros.TempMixOp;
 import sm.pgp.biblioteca.Filtros.ColorizacionOp;
 import sm.pgp.biblioteca.Filtros.NegativoOp;
-import sm.pgp.biblioteca.Filtros.TritanOp;
+import sm.pgp.biblioteca.Filtros.DaltonismoOp;
 import sm.pgp.biblioteca.Filtros.UmbralizacionOp;
 import sm.pgp.biblioteca.LayerRender;
 import sm.sound.SMRecorder;
 import sm.sound.SMSoundRecorder;
-//import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery;
-//import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
-//import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
-//import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
 /**
  * Ventana principal del programa donde se aloja el escritorio y toda la interfaz de usuario.
  * @author gervi
  */
 public class VentanaPaint extends javax.swing.JFrame {
-
+    
+    /**
+     * Imagen cargada en la ventana.
+     */
+    private BufferedImage imagen;
+    /**
+     * Color seleccionado en la ventana.
+     */
+    private Color selectedColor = Color.BLACK;
+    /**
+     * Reproductor de audio.
+     */
+    private Clip player = null;
+    /**
+     * Tiempo transcurrido de la pista de audio.
+     */
+    private long clipTime = 0;
+    /**
+     * El indice de la pista que esta sonando.
+     */
+    private int sonando;
+    /**
+     * Grabador de audio.
+     */
+    private SMRecorder recorder = null;
+    /**
+     * Archivo grabado.
+     */
+    private File recorded;
+    /**
+     * Tipo de herramienta seleccionada en la pagina.
+     */
+    private Tipo herramienta;
+    
     /**
      * Constructor de la clase.
      */
@@ -158,8 +189,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         PlayList = new javax.swing.JComboBox<>();
         Separador7 = new javax.swing.JToolBar.Separator();
         ReproductorVideo = new javax.swing.JPanel();
-        PlayPauseV = new javax.swing.JButton();
-        StopV = new javax.swing.JButton();
         Camara = new javax.swing.JButton();
         Captura = new javax.swing.JButton();
         OK = new javax.swing.JButton();
@@ -178,13 +207,13 @@ public class VentanaPaint extends javax.swing.JFrame {
         panelSeno = new javax.swing.JPanel();
         FuncionSeno = new javax.swing.JButton();
         TempMix = new javax.swing.JButton();
-        Tritanopia = new javax.swing.JButton();
         Sepia = new javax.swing.JButton();
         Tintar = new javax.swing.JButton();
         Ecualizar = new javax.swing.JButton();
-        Ecualizar1 = new javax.swing.JButton();
         Negativo = new javax.swing.JButton();
         Colorizar = new javax.swing.JButton();
+        Daltonismo = new javax.swing.JButton();
+        TipoDaltonismo = new javax.swing.JComboBox<>();
         espColor = new javax.swing.JPanel();
         SplitBands = new javax.swing.JButton();
         EspacioColor = new javax.swing.JComboBox<>();
@@ -214,6 +243,8 @@ public class VentanaPaint extends javax.swing.JFrame {
         ColorRelleno = new javax.swing.JButton();
         ColorRelleno2 = new javax.swing.JButton();
         Escritorio = new javax.swing.JDesktopPane();
+        panelTransp = new javax.swing.JPanel();
+        NivelTransp = new javax.swing.JSlider();
         panelRelleno = new javax.swing.JPanel();
         Rnormal = new javax.swing.JToggleButton();
         Rdegradado = new javax.swing.JToggleButton();
@@ -223,8 +254,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         DegDig2 = new javax.swing.JToggleButton();
         DegVer = new javax.swing.JToggleButton();
         DegDig1 = new javax.swing.JToggleButton();
-        panelTransp = new javax.swing.JPanel();
-        NivelTransp = new javax.swing.JSlider();
         panelRgb = new javax.swing.JPanel();
         R = new javax.swing.JRadioButton();
         G = new javax.swing.JRadioButton();
@@ -239,6 +268,7 @@ public class VentanaPaint extends javax.swing.JFrame {
         Transformar = new javax.swing.JCheckBoxMenuItem();
         BrilloContraste = new javax.swing.JCheckBoxMenuItem();
         Deseleccionar = new javax.swing.JMenuItem();
+        Rasterizar = new javax.swing.JMenuItem();
         Ver = new javax.swing.JMenu();
         VerBGeneral = new javax.swing.JCheckBoxMenuItem();
         VerBProcesado = new javax.swing.JCheckBoxMenuItem();
@@ -610,37 +640,10 @@ public class VentanaPaint extends javax.swing.JFrame {
         Separador7.setPreferredSize(new java.awt.Dimension(6, 40));
         BHerram.add(Separador7);
 
-        ReproductorVideo.setMaximumSize(new java.awt.Dimension(200, 32767));
-        ReproductorVideo.setMinimumSize(new java.awt.Dimension(200, 43));
+        ReproductorVideo.setMaximumSize(new java.awt.Dimension(100, 43));
+        ReproductorVideo.setMinimumSize(new java.awt.Dimension(100, 43));
+        ReproductorVideo.setPreferredSize(new java.awt.Dimension(100, 43));
         ReproductorVideo.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        PlayPauseV.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/play24x24.png"))); // NOI18N
-        PlayPauseV.setToolTipText("Reproducir/Pausar");
-        PlayPauseV.setEnabled(false);
-        PlayPauseV.setFocusable(false);
-        PlayPauseV.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        PlayPauseV.setPreferredSize(new java.awt.Dimension(35, 35));
-        PlayPauseV.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        PlayPauseV.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PlayPauseVActionPerformed(evt);
-            }
-        });
-        ReproductorVideo.add(PlayPauseV);
-
-        StopV.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/stop24x24.png"))); // NOI18N
-        StopV.setToolTipText("Detener");
-        StopV.setEnabled(false);
-        StopV.setFocusable(false);
-        StopV.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        StopV.setPreferredSize(new java.awt.Dimension(35, 35));
-        StopV.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        StopV.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                StopVActionPerformed(evt);
-            }
-        });
-        ReproductorVideo.add(StopV);
 
         Camara.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/Camara.png"))); // NOI18N
         Camara.setToolTipText("Activar Webcam");
@@ -779,7 +782,7 @@ public class VentanaPaint extends javax.swing.JFrame {
 
         panelSeno.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED), "Filtros"));
         panelSeno.setMinimumSize(new java.awt.Dimension(400, 50));
-        panelSeno.setPreferredSize(new java.awt.Dimension(430, 50));
+        panelSeno.setPreferredSize(new java.awt.Dimension(500, 50));
         panelSeno.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, -4));
 
         FuncionSeno.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/sinusoidal.png"))); // NOI18N
@@ -792,7 +795,7 @@ public class VentanaPaint extends javax.swing.JFrame {
         });
         panelSeno.add(FuncionSeno);
 
-        TempMix.setText("T");
+        TempMix.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/mezclaTermica.png"))); // NOI18N
         TempMix.setToolTipText("Mezcla temperatura");
         TempMix.setPreferredSize(new java.awt.Dimension(40, 30));
         TempMix.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -801,20 +804,6 @@ public class VentanaPaint extends javax.swing.JFrame {
             }
         });
         panelSeno.add(TempMix);
-
-        Tritanopia.setToolTipText("Tritanopia");
-        Tritanopia.setPreferredSize(new java.awt.Dimension(40, 30));
-        Tritanopia.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                TritanopiaMousePressed(evt);
-            }
-        });
-        Tritanopia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TritanopiaActionPerformed(evt);
-            }
-        });
-        panelSeno.add(Tritanopia);
 
         Sepia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/sepia.png"))); // NOI18N
         Sepia.setToolTipText("Sepia");
@@ -846,16 +835,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         });
         panelSeno.add(Ecualizar);
 
-        Ecualizar1.setText("G");
-        Ecualizar1.setToolTipText("Gradiente");
-        Ecualizar1.setPreferredSize(new java.awt.Dimension(40, 30));
-        Ecualizar1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                Ecualizar1ActionPerformed(evt);
-            }
-        });
-        panelSeno.add(Ecualizar1);
-
         Negativo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/negativo_24x24.png"))); // NOI18N
         Negativo.setToolTipText("Negativo");
         Negativo.setPreferredSize(new java.awt.Dimension(40, 30));
@@ -875,6 +854,20 @@ public class VentanaPaint extends javax.swing.JFrame {
             }
         });
         panelSeno.add(Colorizar);
+
+        Daltonismo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/daltonismo.png"))); // NOI18N
+        Daltonismo.setToolTipText("Filtro de daltonismo");
+        Daltonismo.setPreferredSize(new java.awt.Dimension(40, 30));
+        Daltonismo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DaltonismoActionPerformed(evt);
+            }
+        });
+        panelSeno.add(Daltonismo);
+
+        TipoDaltonismo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Deuteranopia", "Protanopia", "Tritanopia" }));
+        TipoDaltonismo.setToolTipText("Tipo de daltonismo");
+        panelSeno.add(TipoDaltonismo);
 
         panelAjustes.add(panelSeno);
 
@@ -1150,77 +1143,6 @@ public class VentanaPaint extends javax.swing.JFrame {
 
         getContentPane().add(panelDibujo, java.awt.BorderLayout.WEST);
 
-        TipoRelleno.add(Rnormal);
-        Rnormal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/rellenar.png"))); // NOI18N
-        Rnormal.setPreferredSize(new java.awt.Dimension(35, 35));
-        Rnormal.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RnormalActionPerformed(evt);
-            }
-        });
-        panelRelleno.add(Rnormal);
-
-        TipoRelleno.add(Rdegradado);
-        Rdegradado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/degradado.png"))); // NOI18N
-        Rdegradado.setPreferredSize(new java.awt.Dimension(35, 35));
-        Rdegradado.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                RdegradadoActionPerformed(evt);
-            }
-        });
-        panelRelleno.add(Rdegradado);
-
-        Separador6.setMaximumSize(new java.awt.Dimension(130, 10));
-        Separador6.setMinimumSize(new java.awt.Dimension(130, 10));
-        Separador6.setPreferredSize(new java.awt.Dimension(130, 10));
-        panelRelleno.add(Separador6);
-
-        panelDegradado.setMaximumSize(new java.awt.Dimension(100, 100));
-        panelDegradado.setMinimumSize(new java.awt.Dimension(100, 100));
-        panelDegradado.setLayout(new java.awt.BorderLayout());
-
-        TipoDegradado.add(DegHor);
-        DegHor.setText("Horizontal");
-        DegHor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DegHorActionPerformed(evt);
-            }
-        });
-        panelDegradado.add(DegHor, java.awt.BorderLayout.PAGE_START);
-
-        TipoDegradado.add(DegDig2);
-        DegDig2.setText("Diagonal 2");
-        DegDig2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DegDig2ActionPerformed(evt);
-            }
-        });
-        panelDegradado.add(DegDig2, java.awt.BorderLayout.LINE_END);
-
-        TipoDegradado.add(DegVer);
-        DegVer.setText("Vertical");
-        DegVer.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DegVerActionPerformed(evt);
-            }
-        });
-        panelDegradado.add(DegVer, java.awt.BorderLayout.PAGE_END);
-
-        TipoDegradado.add(DegDig1);
-        DegDig1.setText("Diagonal 1");
-        DegDig1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DegDig1ActionPerformed(evt);
-            }
-        });
-        panelDegradado.add(DegDig1, java.awt.BorderLayout.CENTER);
-
-        panelRelleno.add(panelDegradado);
-
-        Escritorio.setLayer(panelRelleno, javax.swing.JLayeredPane.POPUP_LAYER);
-        Escritorio.add(panelRelleno);
-        panelRelleno.setBounds(520, 0, 150, 130);
-
         panelTransp.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 2));
 
         NivelTransp.setToolTipText("Nivel de transparencia");
@@ -1240,6 +1162,83 @@ public class VentanaPaint extends javax.swing.JFrame {
         Escritorio.setLayer(panelTransp, javax.swing.JLayeredPane.POPUP_LAYER);
         Escritorio.add(panelTransp);
         panelTransp.setBounds(580, 0, 150, 30);
+
+        TipoRelleno.add(Rnormal);
+        Rnormal.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/rellenar.png"))); // NOI18N
+        Rnormal.setToolTipText("Relleno normal");
+        Rnormal.setPreferredSize(new java.awt.Dimension(35, 35));
+        Rnormal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RnormalActionPerformed(evt);
+            }
+        });
+        panelRelleno.add(Rnormal);
+
+        TipoRelleno.add(Rdegradado);
+        Rdegradado.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/degradado.png"))); // NOI18N
+        Rdegradado.setToolTipText("Relleno con degradado");
+        Rdegradado.setPreferredSize(new java.awt.Dimension(35, 35));
+        Rdegradado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RdegradadoActionPerformed(evt);
+            }
+        });
+        panelRelleno.add(Rdegradado);
+
+        Separador6.setMaximumSize(new java.awt.Dimension(130, 10));
+        Separador6.setMinimumSize(new java.awt.Dimension(130, 10));
+        Separador6.setPreferredSize(new java.awt.Dimension(130, 10));
+        panelRelleno.add(Separador6);
+
+        panelDegradado.setMaximumSize(new java.awt.Dimension(100, 100));
+        panelDegradado.setMinimumSize(new java.awt.Dimension(100, 100));
+        panelDegradado.setLayout(new java.awt.BorderLayout());
+
+        TipoDegradado.add(DegHor);
+        DegHor.setText("Horizontal");
+        DegHor.setToolTipText("Degradado horizontal");
+        DegHor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DegHorActionPerformed(evt);
+            }
+        });
+        panelDegradado.add(DegHor, java.awt.BorderLayout.PAGE_START);
+
+        TipoDegradado.add(DegDig2);
+        DegDig2.setText("Diagonal 2");
+        DegDig2.setToolTipText("Degradado diagonal");
+        DegDig2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DegDig2ActionPerformed(evt);
+            }
+        });
+        panelDegradado.add(DegDig2, java.awt.BorderLayout.LINE_END);
+
+        TipoDegradado.add(DegVer);
+        DegVer.setText("Vertical");
+        DegVer.setToolTipText("Degradado vertical");
+        DegVer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DegVerActionPerformed(evt);
+            }
+        });
+        panelDegradado.add(DegVer, java.awt.BorderLayout.PAGE_END);
+
+        TipoDegradado.add(DegDig1);
+        DegDig1.setText("Diagonal 1");
+        DegDig1.setToolTipText("Degradado diagonal");
+        DegDig1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DegDig1ActionPerformed(evt);
+            }
+        });
+        panelDegradado.add(DegDig1, java.awt.BorderLayout.CENTER);
+
+        panelRelleno.add(panelDegradado);
+
+        Escritorio.setLayer(panelRelleno, javax.swing.JLayeredPane.POPUP_LAYER);
+        Escritorio.add(panelRelleno);
+        panelRelleno.setBounds(520, 0, 150, 130);
 
         ColorizarG.add(R);
         R.setSelected(true);
@@ -1283,7 +1282,7 @@ public class VentanaPaint extends javax.swing.JFrame {
 
         Escritorio.setLayer(panelRgb, javax.swing.JLayeredPane.POPUP_LAYER);
         Escritorio.add(panelRgb);
-        panelRgb.setBounds(610, 430, 160, 40);
+        panelRgb.setBounds(520, 460, 160, 40);
 
         getContentPane().add(Escritorio, java.awt.BorderLayout.CENTER);
 
@@ -1364,6 +1363,16 @@ public class VentanaPaint extends javax.swing.JFrame {
             }
         });
         Editar.add(Deseleccionar);
+
+        Rasterizar.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        Rasterizar.setText("Raterizar");
+        Rasterizar.setToolTipText("Rasteriza las figuras de la imagen");
+        Rasterizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RasterizarActionPerformed(evt);
+            }
+        });
+        Editar.add(Rasterizar);
 
         BarraMenu.add(Editar);
 
@@ -1514,11 +1523,11 @@ public class VentanaPaint extends javax.swing.JFrame {
      * @param evt: Objeto de evento de tipo ActionEvent.
      */
     private void AbanicoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AbanicoActionPerformed
-        VentanaInterna ventana = (VentanaInterna) Escritorio.getSelectedFrame();
-        if (ventana != null){
-            ventana.getLienzo().setTipo(Tipo.ABANICO);
+        //VentanaInterna ventana = (VentanaInterna) Escritorio.getSelectedFrame();
+        //if (ventana != null){
+            //ventana.getLienzo().setTipo(Tipo.ABANICO);
             this.HerramientaAct.setText("Abanica tu vida ");
-        }
+        //}
     }//GEN-LAST:event_AbanicoActionPerformed
     /**
      * Establece el color de la figura del lienzo.
@@ -1611,10 +1620,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         SeleccionarTam.setTitle("Nueva ventana");
         SeleccionarTam.setLocation(this.getLocation());
         SeleccionarTam.setVisible(true);
-        
-        /*BufferedImage imagen;
-        imagen = new BufferedImage(300,300,BufferedImage.TYPE_INT_ARGB);
-        ventana.getLienzo().setImagen(imagen);*/
     }//GEN-LAST:event_NuevoActionPerformed
     /**
      * Carga en el buffer una nueva imagen.
@@ -1678,23 +1683,12 @@ public class VentanaPaint extends javax.swing.JFrame {
                 }
                 else{
                     if (f.getName().endsWith(".avi") || f.getName().endsWith(".mpg")){
-                        VentanaInternaVideo video = new VentanaInternaVideo(f);
-                        Escritorio.add(video);
-                        video.setVisible(true);
-                        video.play();
-                        /*System.out.println("a");
-                        mediaComponent = new EmbeddedMediaPlayerComponent();
-                        System.out.println("b");
-                        VentanaInternaCamara video = new VentanaInternaCamara();
-                        System.out.println("c");
-                        video.setContentPane(mediaComponent);
-                        System.out.println("d");
-                        Escritorio.add(video);
-                        System.out.println("e");
-                        video.setVisible(true);
-                        System.out.println("f");
-                        mediaComponent.mediaPlayer().media().play(dlg.getSelectedFile().getAbsolutePath());
-                        System.out.println("g");*/
+                        VentanaInternaVideo ventanaVideo = new VentanaInternaVideo(f);
+                        Escritorio.add(ventanaVideo);
+                        ventanaVideo.addMediaPlayerEventListener(new VideoListener());
+                        ventanaVideo.setVisible(true);
+                        ventanaVideo.setTitle(f.getName());
+                        ventanaVideo.play();
                     }
                     else
                         JOptionPane.showMessageDialog(this, "Tipo de archivo no reconocido", "Error", JOptionPane.WARNING_MESSAGE);
@@ -1972,25 +1966,36 @@ public class VentanaPaint extends javax.swing.JFrame {
      * @param evt: Objeto de evento de tipo ActionEvent.
      */
     private void PlayPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PlayPauseActionPerformed
-        if (player != null && player.isRunning()) {
-            clipTime = player.getMicrosecondPosition();
-            player.stop();
-        }
-        else {
-            if (sonando != PlayList.getSelectedIndex() || clipTime == 0){
-                try {
-                    sonando = PlayList.getSelectedIndex();
-                    File f = (File)PlayList.getSelectedItem();
-                    player = AudioSystem.getClip();
-                    player.open(AudioSystem.getAudioInputStream(f));
-                    player.addLineListener(new ManejadorAudio());
-                    player.start();
-                } catch(Exception exception){
-                    JOptionPane.showMessageDialog(this, "Error al reproducir el archivo de audio", "Error", JOptionPane.ERROR_MESSAGE);;}
+        if(Escritorio.getSelectedFrame() != null){
+            VentanaInternaVideo ventanaV = null;
+            if(Escritorio.getSelectedFrame().getClass().getCanonicalName().equals("Velazquez.VentanaInternaVideo")){
+                ventanaV = (VentanaInternaVideo) Escritorio.getSelectedFrame();
+                if (ventanaV != null){
+                    ventanaV.play();
+                }
             }
-            else{
-                player.setMicrosecondPosition(clipTime);
-                player.start();
+        }
+        else{
+            if (player != null && player.isRunning()) {
+                clipTime = player.getMicrosecondPosition();
+                player.stop();
+            }
+            else {
+                if (sonando != PlayList.getSelectedIndex() || clipTime == 0){
+                    try {
+                        sonando = PlayList.getSelectedIndex();
+                        File f = (File)PlayList.getSelectedItem();
+                        player = AudioSystem.getClip();
+                        player.open(AudioSystem.getAudioInputStream(f));
+                        player.addLineListener(new ManejadorAudio());
+                        player.start();
+                    } catch(Exception exception){
+                        JOptionPane.showMessageDialog(this, "Error al reproducir el archivo de audio", "Error", JOptionPane.ERROR_MESSAGE);;}
+                }
+                else{
+                    player.setMicrosecondPosition(clipTime);
+                    player.start();
+                }
             }
         }
     }//GEN-LAST:event_PlayPauseActionPerformed
@@ -1999,11 +2004,16 @@ public class VentanaPaint extends javax.swing.JFrame {
      * @param evt: Objeto de evento de tipo ActionEvent.
      */
     private void StopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StopActionPerformed
-        if (player != null) {
-            player.stop();
-            clipTime = 0;
-            
-            Stop.setEnabled(false);
+        VentanaInternaVideo ventanaV = (VentanaInternaVideo)(Escritorio.getSelectedFrame());
+        if (ventanaV != null)
+            ventanaV.stop();
+        else{
+            if (player != null) {
+                player.stop();
+                clipTime = 0;
+
+                Stop.setEnabled(false);
+            }
         }
     }//GEN-LAST:event_StopActionPerformed
     /**
@@ -2021,7 +2031,6 @@ public class VentanaPaint extends javax.swing.JFrame {
             try{
                 recorded.createNewFile();
                 recorder = new SMSoundRecorder(recorded);
-                //((SMSoundRecorder)recorder).addLineListener(new ManejadorAudio());
                 recorder.record();
                 Grabar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/stopRecord24x24.png")));
             }catch (IOException ex){
@@ -2035,26 +2044,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         Grabar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/record24x24.png")));
         recorder = null;
     }
-        
-        
-        /*if (recorder == null){
-            recorded = new File("grabacion.wav");
-            try{
-                recorded.createNewFile();
-                recorder = new SMSoundRecorder(recorded);
-                //((SMSoundRecorder)recorder).addLineListener(new ManejadorAudio());
-                recorder.record();
-                Grabar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/stopRecord24x24.png")));
-            }catch (IOException ex){
-                JOptionPane.showMessageDialog(this, "Error al grabar", "Error", JOptionPane.ERROR_MESSAGE);
-                Logger.getLogger(VentanaPaint.class.getName()).log(Level.SEVERE, null, ex);}
-        }
-        else{
-            recorder.stop();
-            PlayList.addItem(recorded);
-            Grabar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/record24x24.png")));
-            recorder = null;
-        }*/
     }//GEN-LAST:event_GrabarActionPerformed
     /**
      * Establece un filtro de UmbralizacionOp a la imagen de la ventana seleccionada.
@@ -2195,7 +2184,7 @@ public class VentanaPaint extends javax.swing.JFrame {
      * @param evt: Objeto de evento de tipo ActionEvent.
      */
     private void AcercaDActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AcercaDActionPerformed
-        JOptionPane.showMessageDialog(this, "Velazquez: dibujo, procesado y sonido\nVersion: 1.0\nAutor: Pablo Gervilla Palomar", "Acerca de", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Velazquez: dibujo, procesado y sonido\nVersion: 2.0\nAutor: Pablo Gervilla Palomar", "Acerca de", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_AcercaDActionPerformed
     /**
      * Activa el boton de PlayPause.
@@ -2204,7 +2193,11 @@ public class VentanaPaint extends javax.swing.JFrame {
     private void PlayListItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_PlayListItemStateChanged
         if (!PlayPause.isEnabled()){
             PlayPause.setEnabled(true);
-        }   
+        }
+        if (PlayList.getSelectedIndex() == -1){
+            PlayPause.setEnabled(false);
+            Stop.setEnabled(false);
+        }
     }//GEN-LAST:event_PlayListItemStateChanged
     /**
      * Borra el elemento seleccionado de la PlayList pulsando la tecla supr.
@@ -2272,6 +2265,7 @@ public class VentanaPaint extends javax.swing.JFrame {
             panelEscala.setVisible(Transformar.isSelected());
             panelRotacion.setVisible(Transformar.isSelected());
             Separador2.setVisible(Transformar.isSelected());
+            OK.setVisible(false);
         }
         else{
         VentanaInterna ventana = (VentanaInterna) this.Escritorio.getSelectedFrame();
@@ -2455,6 +2449,7 @@ public class VentanaPaint extends javax.swing.JFrame {
         if (panelBrillo.isVisible()){
             panelBrillo.setVisible(BrilloContraste.isSelected());
             panelContraste.setVisible(BrilloContraste.isSelected());
+            OK.setVisible(false);
         }
         else{
         VentanaInterna ventana = (VentanaInterna) this.Escritorio.getSelectedFrame();
@@ -2717,14 +2712,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_TempMixMousePressed
 
-    private void PlayPauseVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PlayPauseVActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PlayPauseVActionPerformed
-
-    private void StopVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StopVActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_StopVActionPerformed
-
     private void CamaraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CamaraActionPerformed
         VentanaInternaCamara ventanaCamara = VentanaInternaCamara.getInstance();
         if (ventanaCamara != null){
@@ -2734,26 +2721,40 @@ public class VentanaPaint extends javax.swing.JFrame {
     }//GEN-LAST:event_CamaraActionPerformed
 
     private void CapturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CapturaActionPerformed
-        VentanaInternaCamara ventanaCamara;
-        try{
-            ventanaCamara = (VentanaInternaCamara) Escritorio.getSelectedFrame();
-            if (ventanaCamara != null) {
-                BufferedImage captura = ventanaCamara.getImagen();
-                VentanaInterna nuevaVentana = new VentanaInterna(captura.getWidth(), captura.getHeight(), this);
-                BufferedImage img = new BufferedImage(captura.getWidth(), captura.getHeight(), 1);
-            
-                for (int x = 0; x < captura.getWidth(); x++) {
-                    for (int y = 0; y < captura.getHeight(); y++) {
-                        img.setRGB(x,y,captura.getRGB(x, y));
-                    }
+        if(Escritorio.getSelectedFrame() != null){
+            VentanaInternaCamara ventanaC;
+            VentanaInternaVideo ventanaV;
+            BufferedImage captura = null;
+            if(Escritorio.getSelectedFrame().getClass().getCanonicalName().equals("Velazquez.VentanaInternaCamara")){
+                ventanaC = (VentanaInternaCamara) Escritorio.getSelectedFrame();
+                if (ventanaC != null){
+                    captura = ventanaC.getImagen();
                 }
-                nuevaVentana.getLienzo().setImagen(img);
-                this.Escritorio.add(nuevaVentana);
-                nuevaVentana.setTitle("Captura de video");
-                nuevaVentana.setVisible(true);
             }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(this, "La ventana seleccionada no es de Video,\nno se puede hacer una captura", "Error", JOptionPane.ERROR_MESSAGE);
+            if(Escritorio.getSelectedFrame().getClass().getCanonicalName().equals("Velazquez.VentanaInternaVideo")){
+                ventanaV = (VentanaInternaVideo) Escritorio.getSelectedFrame();
+                if (ventanaV != null){
+                    captura = ventanaV.getImagen();
+                }
+            }
+            if(captura != null){
+                try{
+                    VentanaInterna nuevaVentana = new VentanaInterna(captura.getWidth(), captura.getHeight(), this);
+                    BufferedImage img = new BufferedImage(captura.getWidth(), captura.getHeight(), 1);
+
+                    for (int x = 0; x < captura.getWidth(); x++) {
+                        for (int y = 0; y < captura.getHeight(); y++) {
+                            img.setRGB(x,y,captura.getRGB(x, y));
+                        }
+                    }
+                    nuevaVentana.getLienzo().setImagen(img);
+                    this.Escritorio.add(nuevaVentana);
+                    nuevaVentana.setTitle("Captura de video");
+                    nuevaVentana.setVisible(true);
+                }catch(Exception e){
+                    JOptionPane.showMessageDialog(this, "La ventana seleccionada no es de Video,\nno se puede hacer una captura", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         }
     }//GEN-LAST:event_CapturaActionPerformed
     /**
@@ -2763,10 +2764,6 @@ public class VentanaPaint extends javax.swing.JFrame {
     private void VerVideoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VerVideoActionPerformed
         ReproductorVideo.setVisible(VerVideo.isSelected());
     }//GEN-LAST:event_VerVideoActionPerformed
-
-    private void Ecualizar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Ecualizar1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_Ecualizar1ActionPerformed
     /**
      * Resta la imagen de la ventana activa a la de la ni activa.
      * @param evt: Objeto de evento de tipo ActionEvent.
@@ -2832,21 +2829,32 @@ public class VentanaPaint extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_AlfaStateChanged
 
-    private void TritanopiaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TritanopiaMousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TritanopiaMousePressed
-
-    private void TritanopiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TritanopiaActionPerformed
+    private void DaltonismoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DaltonismoActionPerformed
         VentanaInterna ventana = (VentanaInterna)(Escritorio.getSelectedFrame());
         if (ventana != null){
            BufferedImage imgSource = ventana.getLienzo().getImagen(false);
            if(imgSource!= null){
-               TritanOp sepia = new TritanOp();
+               DaltonismoOp sepia = new DaltonismoOp(TipoDaltonismo.getSelectedIndex());
                sepia.filter(imgSource, imgSource);
                repaint();
            }
         }
-    }//GEN-LAST:event_TritanopiaActionPerformed
+    }//GEN-LAST:event_DaltonismoActionPerformed
+
+    private void RasterizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RasterizarActionPerformed
+        VentanaInterna ventana = (VentanaInterna)(Escritorio.getSelectedFrame());
+        if (ventana != null){
+           BufferedImage img = ventana.getLienzo().getImagen(true);
+           if(img != null){
+               VentanaInterna nuevaVentana = new VentanaInterna(ventana.getWidth(), ventana.getHeight(), this);
+               nuevaVentana.getLienzo().setImagen(img);
+               nuevaVentana.setTitle("Raster_" + ventana.getTitle());
+               Escritorio.add(nuevaVentana);
+               nuevaVentana.setVisible(true);
+               repaint();
+           }
+        }
+    }//GEN-LAST:event_RasterizarActionPerformed
     /**
      * Aplica un filtro LookupOp del tipo indicado a la imagen de la ventana activa.
      * @param tipo: tipo de filtro LookupOp.
@@ -2992,6 +3000,33 @@ public class VentanaPaint extends javax.swing.JFrame {
         }
     }
     
+    private class VideoListener extends MediaPlayerEventAdapter {
+        @Override
+        public void opening(MediaPlayer mediaPlayer) {
+            PlayPause.setEnabled(true);
+            PlayPause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/pausa24x24.png")));
+            Stop.setEnabled(true);
+        }
+        @Override
+        public void playing(MediaPlayer mediaPlayer) {
+            Stop.setEnabled(true);
+            PlayPause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/pausa24x24.png")));
+        }
+        @Override
+        public void paused(MediaPlayer mediaPlayer) {
+            PlayPause.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/play24x24.png")));
+        }
+        @Override
+        public void stopped(MediaPlayer mediaPlayer) {
+            Stop.setEnabled(false);
+        }
+        @Override
+        public void finished(MediaPlayer mediaPlayer) {
+            this.paused(mediaPlayer);
+            this.stopped(mediaPlayer);
+        }
+    }
+    
     /**
      * @param args the command line arguments.
      */
@@ -3028,17 +3063,6 @@ public class VentanaPaint extends javax.swing.JFrame {
             }
         });
     }
-
-    
-    private BufferedImage imagen;
-    Color selectedColor = Color.BLACK;
-    //private SMPlayer player = null;
-    private Clip player = null;
-    long clipTime = 0;
-    int sonando;
-    SMRecorder recorder = null;
-    File recorded;
-    Tipo herramienta;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton Abanico;
@@ -3069,6 +3093,7 @@ public class VentanaPaint extends javax.swing.JFrame {
     private javax.swing.ButtonGroup ContinuidadTrazo;
     private javax.swing.JButton Contraste;
     private javax.swing.JMenuItem Copiar;
+    private javax.swing.JButton Daltonismo;
     private javax.swing.JButton Decrementar;
     private javax.swing.JButton Defecto;
     private javax.swing.JToggleButton DegDig1;
@@ -3077,7 +3102,6 @@ public class VentanaPaint extends javax.swing.JFrame {
     private javax.swing.JToggleButton DegVer;
     private javax.swing.JMenuItem Deseleccionar;
     private javax.swing.JButton Ecualizar;
-    private javax.swing.JButton Ecualizar1;
     private javax.swing.JMenu Editar;
     private javax.swing.JComboBox<String> Efectos;
     private javax.swing.JDesktopPane Escritorio;
@@ -3105,8 +3129,8 @@ public class VentanaPaint extends javax.swing.JFrame {
     private javax.swing.JToggleButton Ovalo;
     private javax.swing.JComboBox<File> PlayList;
     private javax.swing.JButton PlayPause;
-    private javax.swing.JButton PlayPauseV;
     private javax.swing.JRadioButton R;
+    private javax.swing.JMenuItem Rasterizar;
     private javax.swing.JToggleButton Rdegradado;
     private javax.swing.JToggleButton Rectangulo;
     private javax.swing.JToggleButton Relleno;
@@ -3129,16 +3153,15 @@ public class VentanaPaint extends javax.swing.JFrame {
     private javax.swing.JButton Sepia;
     private javax.swing.JButton SplitBands;
     private javax.swing.JButton Stop;
-    private javax.swing.JButton StopV;
     private javax.swing.JButton TempMix;
     private javax.swing.JButton Tintar;
+    private javax.swing.JComboBox<String> TipoDaltonismo;
     private javax.swing.ButtonGroup TipoDegradado;
     private javax.swing.ButtonGroup TipoRelleno;
     private javax.swing.JCheckBoxMenuItem Transformar;
     private javax.swing.JToggleButton Transparencia;
     private javax.swing.JToggleButton TrazoC;
     private javax.swing.JToggleButton TrazoD;
-    private javax.swing.JButton Tritanopia;
     private javax.swing.JSlider Umbral;
     private javax.swing.JMenu Ver;
     private javax.swing.JCheckBoxMenuItem VerAudio;
