@@ -1,7 +1,8 @@
-<H1>Editor fotografico Velazquez</H1>
+<H1>Editor fotográfico Velázquez</H1>
 
 - Pablo Gervilla Palomar 
 
+<H2>Descripción</H2>
     Velázquez es una aplicación multimedia que permite tratar y
 gestionar medios de dibujo, imágenes audio y video, y cuyo nombre viene
 por el famoso pintor del siglo XVII. Para realizar todas sus funciones, la
@@ -19,10 +20,11 @@ aplicación podrá:
     - Reproducir archivos de audio.
     - Mostrar video.
 
-    Interfaz de usuario
+<H2>Interfaz de usuario</H2>
 
 ![img](https://github.com/Gervilla/SistemasMultimedia/blob/master/Interfaz.PNG)
 
-El programa, entre otras cosas, tiene efectos filtros y efectos como sepia, tinte de color, ecualizacion, negativo, funcion seno, media, binomial, enfoque, relieve, laplaciano y funciones propias como son (a la cual llame) colorizacion, mezcla termica y un filtro de daltonismo el cual transforma la imagen en como la veria uno de los 3 tipos de daltonicos dicromaticos.
+El programa, entre otras cosas, tiene efectos filtros y efectos como sepia, tinte de color, ecualización, negativo, función seno, media, binomial, enfoque, relieve, laplaciano y funciones propias como son (a la cual llame) colorización, mezcla térmica y un filtro de daltonismo el cual transforma la imagen en como la vería uno de los tres tipos de daltónicos dicromáticos.
 
-<H3>Para una informacion mas clara del programa, el pdf contiene una documentacion completa con todas las funcionalidades, manual de usuario y todos los diagramas, requisitos y procedimientos creados y seguidos durante todo el proyecto</H3>
+<H3>Para una información más clara del programa, el pdf contiene una documentación completa con todas las funcionalidades, manual de usuario y todos los diagramas, requisitos y procedimientos creados y seguidos durante todo el proyecto.</H3>
+
